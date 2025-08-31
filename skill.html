@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills - Abdullah Al Mahmud</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        /* Skills page specific styles */
+        body {
+            background: linear-gradient(135deg, #18191a 0%, #232526 100%);
+            color: #e0e0e0;
+        }
+
+        .skills-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .skills-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .skills-header h1 {
+            font-size: 3rem;
+            color: #ffb347;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .skills-header p {
+            font-size: 1.2rem;
+            color: #e0e0e0;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .skill-search {
+            max-width: 500px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 179, 71, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ffb347;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 20px rgba(255, 179, 71, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: rgba(224, 224, 224, 0.6);
+        }
+
+        .skill-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .skill-category {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #6a11cb, #ffb347);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .skill-category:hover::before {
+            transform: scaleX(1);
+        }
+
+        .skill-category:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 179, 71, 0.3);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            color: #ffb347;
+            margin-right: 20px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 179, 71, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .skill-category:hover .category-icon {
+            transform: rotate(360deg) scale(1.1);
+            background: rgba(255, 179, 71, 0.2);
+        }
+
+        .category-title {
+            color: #ffb347;
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .skill-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 179, 71, 0.2);
+            transform: translateX(10px);
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .skill-name {
+            display: flex;
+            align-items: center;
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .skill-name i {
+            margin-right: 12px;
+            color: #ffb347;
+            font-size: 1.2rem;
+        }
+
+        .skill-level {
+            background: linear-gradient(135deg, #6a11cb, #ffb347);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .skill-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #6a11cb, #ffb347);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 2s ease;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .skill-description {
+            color: rgba(224, 224, 224, 0.8);
+            font-size: 0.9rem;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            background: rgba(255, 179, 71, 0.1);
+            color: #ffb347;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(255, 179, 71, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: rgba(255, 179, 71, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .loading-placeholder {
+            text-align: center;
+            padding: 60px 20px;
+            color: #e0e0e0;
+        }
+
+        .loading-message {
+            font-size: 1.2rem;
+            color: #ffb347;
+        }
+
+        .loading-message i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #ff6b6b;
+        }
+
+        .error-message i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .error-message h3 {
+            margin-bottom: 15px;
+            color: #ff6b6b;
+        }
+
+        .error-message button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #ffb347;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #232526;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .error-message button:hover {
+            background: #ff9f1c;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .skills-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .skill-categories {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .skill-category {
+                padding: 20px;
+            }
+
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .category-icon {
+                margin-right: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .skills-container {
+                padding: 15px;
+            }
+
+            .skills-header h1 {
+                font-size: 2rem;
+            }
+
+            .skill-item {
+                padding: 15px;
+            }
+
+            .skill-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        /* Animation classes */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.4s; }
+        .fade-in:nth-child(4) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bounce-in {
+            animation: bounceIn 0.8s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="logo">Abdullah Al Mahmud</h1>
+        <nav>
+            <ul>
+                <li><a href="home.html">Home</a></li>
+                <li><a href="home.html#about">About</a></li>
+                <li><a href="skill.html" class="active">Skills</a></li>
+                <li><a href="education.html">Education</a></li>
+                <li><a href="experience.html">Experience</a></li>
+                <li><a href="work.html">Work</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="skills-container">
+            <!-- Skills Header -->
+            <div class="skills-header">
+                <h1>My <span style="color: #6a11cb;">Skills</span> & Expertise</h1>
+                <p>Explore my technical capabilities, soft skills, and professional competencies that drive innovation and success in every project.</p>
+            </div>
+
+            <!-- Skill Search -->
+            <div class="skill-search">
+                <input type="text" class="search-input" placeholder="Search for skills..." id="skillSearch">
+            </div>
+
+            <!-- Debug Button -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button onclick="loadSkillsFromDatabase()" style="padding: 10px 20px; background: #ffb347; border: none; border-radius: 5px; cursor: pointer; color: #232526; font-weight: 600;">
+                    Reload Skills from Database
+                </button>
+                    </div>
+                    
+            <!-- Skill Categories -->
+            <div class="skill-categories" id="skillCategories">
+                <!-- Loading placeholder -->
+                <div class="loading-placeholder">
+                    <div class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading skills from database...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Abdullah Al Mahmud. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/typing-effect.js"></script>
+    <script src="js/database-loader.js"></script>
+    <script>
+        // Skills page specific JavaScript
+        let skillsData = [];
+        let filteredSkills = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load skills from database
+            loadSkillsFromDatabase();
+            
+            // Initialize search functionality
+            initializeSkillSearch();
+        });
+
+        // Load skills from database
+        async function loadSkillsFromDatabase() {
+            try {
+                const dataLoader = new PortfolioDataLoader();
+                
+                // Load both skills and categories
+                const [skills, categories] = await Promise.all([
+                    dataLoader.loadSkills(),
+                    dataLoader.loadSkillCategories()
+                ]);
+                
+                console.log('Raw skills from database:', skills);
+                console.log('Raw categories from database:', categories);
+                
+                if (skills && skills.length > 0) {
+                    // Map the database structure to our expected format
+                    const mappedSkills = skills.map(skill => ({
+                        name: skill.name,
+                        proficiency: skill.proficiency_level,
+                        description: skill.description,
+                        category: skill.category_id,
+                        category_name: skill.category_name,
+                        display_order: skill.display_order
+                    }));
+                    
+                    console.log('Mapped skills:', mappedSkills);
+                    
+                    skillsData = mappedSkills;
+                    filteredSkills = mappedSkills;
+                    displaySkills(mappedSkills);
+            initializeSkillAnimations();
+            addHoverEffects();
+                } else {
+                    showLoadingError();
+                }
+            } catch (error) {
+                console.error('Error loading skills:', error);
+                showLoadingError();
+            }
+        }
+
+        // Display skills in the DOM
+        function displaySkills(skills) {
+            const container = document.getElementById('skillCategories');
+            if (!container) return;
+
+            // Group skills by category
+            const skillsByCategory = groupSkillsByCategory(skills);
+            
+            // Clear loading placeholder
+            container.innerHTML = '';
+            
+            // Create category sections
+            Object.keys(skillsByCategory).forEach(category => {
+                const categorySection = createCategorySection(category, skillsByCategory[category]);
+                container.appendChild(categorySection);
+            });
+        }
+
+        // Group skills by category
+        function groupSkillsByCategory(skills) {
+            const grouped = {};
+            
+            skills.forEach(skill => {
+                // Map category_id to actual category names based on your database
+                let categoryName = getCategoryName(skill.category);
+                if (!grouped[categoryName]) {
+                    grouped[categoryName] = [];
+                }
+                grouped[categoryName].push(skill);
+            });
+            
+            return grouped;
+        }
+
+        // Get category name from category_id
+        function getCategoryName(categoryId) {
+            // Use the category_name from the database if available
+            if (skillsData.length > 0) {
+                const skill = skillsData.find(s => s.category === categoryId);
+                if (skill && skill.category_name) {
+                    return skill.category_name;
+                }
+            }
+            
+            // Fallback mapping if category_name is not available
+            const categoryMap = {
+                1: 'Frontend Development',
+                2: 'Backend Development',
+                3: 'Fullstack Development',
+                4: 'UI/UX Design',
+                5: 'DevOps & Tools'
+            };
+            return categoryMap[categoryId] || 'Other';
+        }
+
+        // Create a category section
+        function createCategorySection(category, skills) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'skill-category fade-in';
+            categoryDiv.setAttribute('data-category', category.toLowerCase());
+            
+            // Get category icon based on category name
+            const categoryIcon = getCategoryIcon(category);
+            
+            categoryDiv.innerHTML = `
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="${categoryIcon}"></i>
+                    </div>
+                    <h3 class="category-title">${category}</h3>
+                </div>
+                ${skills.map(skill => createSkillItem(skill)).join('')}
+            `;
+            
+            return categoryDiv;
+        }
+
+        // Create individual skill item
+        function createSkillItem(skill) {
+            const skillLevel = getSkillLevel(skill.proficiency);
+            
+            return `
+                <div class="skill-item" data-skill="${skill.name.toLowerCase()}">
+                    <div class="skill-header">
+                        <div class="skill-name">
+                            <i class="${getSkillIcon(skill.name)}"></i>
+                            ${skill.name}
+                        </div>
+                        <div class="skill-level">${skillLevel}</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-bar" data-progress="${skill.proficiency}"></div>
+                    </div>
+                    <div class="skill-description">
+                        ${skill.description || 'Professional skill in ' + skill.name}
+                    </div>
+                    <div class="skill-tags">
+                        <span class="skill-tag">${skill.category_name || getCategoryName(skill.category)}</span>
+                        <span class="skill-tag">${skillLevel}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get category icon based on category name
+        function getCategoryIcon(category) {
+            const iconMap = {
+                'Frontend Development': 'fas fa-code',
+                'Backend Development': 'fas fa-server',
+                'Fullstack Development': 'fas fa-laptop-code',
+                'UI/UX Design': 'fas fa-palette',
+                'DevOps & Tools': 'fas fa-tools',
+                'Frontend': 'fas fa-code',
+                'Backend': 'fas fa-server',
+                'Fullstack': 'fas fa-laptop-code',
+                'UI/UX': 'fas fa-palette',
+                'DevOps': 'fas fa-tools',
+                'Tools': 'fas fa-tools',
+                'Other': 'fas fa-star'
+            };
+            
+            return iconMap[category] || iconMap['Other'];
+        }
+
+        // Get skill icon based on skill name
+        function getSkillIcon(skillName) {
+            const iconMap = {
+                'HTML5': 'fab fa-html5',
+                'CSS3': 'fab fa-css3-alt',
+                'JavaScript': 'fab fa-js-square',
+                'React': 'fab fa-react',
+                'Node.js': 'fab fa-node-js',
+                'Python': 'fab fa-python',
+                'PHP': 'fab fa-php',
+                'MySQL': 'fas fa-database',
+                'Git': 'fab fa-git-alt',
+                'Docker': 'fab fa-docker',
+                'Angular': 'fab fa-angular',
+                'Vue.js': 'fab fa-vuejs',
+                'TypeScript': 'fas fa-code',
+                'Sass': 'fab fa-sass',
+                'Less': 'fab fa-less',
+                'Bootstrap': 'fab fa-bootstrap',
+                'Tailwind': 'fas fa-wind',
+                'jQuery': 'fas fa-code',
+                'Express.js': 'fas fa-server',
+                'Laravel': 'fab fa-laravel',
+                'Django': 'fab fa-python',
+                'Flask': 'fab fa-python',
+                'PostgreSQL': 'fas fa-database',
+                'MongoDB': 'fas fa-database',
+                'Redis': 'fas fa-database',
+                'AWS': 'fab fa-aws',
+                'Azure': 'fab fa-microsoft',
+                'Google Cloud': 'fab fa-google',
+                'Kubernetes': 'fab fa-docker',
+                'Jenkins': 'fas fa-cogs',
+                'GitHub Actions': 'fab fa-github',
+                'Figma': 'fab fa-figma',
+                'Adobe XD': 'fas fa-palette',
+                'Sketch': 'fas fa-palette'
+            };
+            
+            return iconMap[skillName] || 'fas fa-code';
+        }
+
+        // Get skill level based on proficiency
+        function getSkillLevel(proficiency) {
+            if (proficiency >= 90) return 'Expert';
+            if (proficiency >= 80) return 'Advanced';
+            if (proficiency >= 70) return 'Intermediate';
+            if (proficiency >= 60) return 'Beginner';
+            return 'Learning';
+        }
+
+        // Initialize skill search
+        function initializeSkillSearch() {
+            const searchInput = document.getElementById('skillSearch');
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                if (searchTerm === '') {
+                    filteredSkills = skillsData;
+                } else {
+                    filteredSkills = skillsData.filter(skill => 
+                        skill.name.toLowerCase().includes(searchTerm) ||
+                        (skill.category_name && skill.category_name.toLowerCase().includes(searchTerm)) ||
+                        getCategoryName(skill.category).toLowerCase().includes(searchTerm) ||
+                        (skill.description && skill.description.toLowerCase().includes(searchTerm))
+                    );
+                }
+                
+                displaySkills(filteredSkills);
+            });
+        }
+
+        // Show loading error
+        function showLoadingError() {
+            const container = document.getElementById('skillCategories');
+            if (container) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Failed to load skills</h3>
+                        <p>Please check your database connection and try again.</p>
+                        <button onclick="loadSkillsFromDatabase()">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize basic animations and interactions
+        function initializeSkillAnimations() {
+            // Add scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Animate progress bars
+            animateProgressBars();
+        }
+
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            
+            progressBars.forEach(bar => {
+                const progress = bar.getAttribute('data-progress');
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                bar.style.width = progress + '%';
+                            }, 500);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                observer.observe(bar);
+            });
+        }
+
+        function addHoverEffects() {
+            // Add pulse animation to category icons on hover
+            document.querySelectorAll('.category-icon').forEach(icon => {
+                icon.addEventListener('mouseenter', function() {
+                    this.style.animation = 'pulse 0.6s ease';
+                });
+                
+                icon.addEventListener('animationend', function() {
+                    this.style.animation = '';
+                });
+            });
+
+            // Add bounce effect to skill items on click
+            document.querySelectorAll('.skill-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    this.style.animation = 'bounceIn 0.6s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 600);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

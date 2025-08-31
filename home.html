@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abdullah AL Mahmud Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="home.html" class="logo">AAM</a>
+            <ul>
+                <li><a href="home.html" class="active">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="skill.html">Skills</a></li>
+                <li><a href="education.html">Education</a></li>
+                <li><a href="work.html">Work</a></li>
+                <li><a href="experience.html">Experience</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="admin-icon-nav">
+        <a href="admin.html" title="Admin Panel"><i class="fas fa-cog"></i></a>
+    </div>
+
+    <section class="home" id="home">
+        <div class="intro">
+            <h1>Hola,</h1>
+            <h2>I'm Abdullah <span class="highlight">Al Mahmud</span></h2>
+            <p>I am into <span class="typing" id="typing-text"></span></p>
+            <a href="#about" class="btn">About Me <i class="fas fa-arrow-down"></i></a>
+            <div class="socials">
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-telegram"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+            <div class="hobbies">
+                <p><strong>Hobbies:</strong> Photography, Traveling, Reading tech blogs, Exploring new programming languages, and contributing to open-source projects.</p>
+            </div>
+        </div>
+        <div class="hero-img">
+            <img src="img/mahmud.JPG" alt="Mahmud">
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="about-container">
+            <div class="about-header">
+                <h2 class="about-title">About Me</h2>
+                <p>Passionate developer with expertise in modern web technologies</p>
+            </div>
+            
+            <div class="about-hero">
+                <div class="about-stats">
+                    <div class="loading-placeholder">
+                        <div class="loading-message">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Loading statistics...
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-grid">
+                <div class="personal-info-placeholder">
+                    <div class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading personal information...
+                    </div>
+                </div>
+                <div class="about-sections-placeholder">
+                    <div class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading about sections...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gallery">
+        <div class="gallery-container">
+            <div class="gallery-header">
+                <h2>Photo Gallery</h2>
+                <p>Capturing moments and memories</p>
+            </div>
+            <div class="photo-gallery">
+                <div class="loading-message">Loading gallery...</div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 Abdullah Al Mahmud. All rights reserved.</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/database-loader.js"></script>
+    <script src="js/typing-effect.js"></script>
+    <script>
+        // Initialize data loader
+        const dataLoader = new PortfolioDataLoader();
+        
+        // Initialize typing effect using shared utility
+        let mainTypingEffect;
+
+        function initTypingEffect() {
+            const typingElement = document.querySelector('.typing');
+            if (typingElement) {
+                const words = ["Backend Development", "Frontend Development", "Web Design", "Full Stack Development"];
+                mainTypingEffect = TypingEffect.create(typingElement, words, {
+                    typeSpeed: 100,
+                    deleteSpeed: 100,
+                    pauseBeforeDelete: 2000,
+                    pauseBeforeNext: 1000
+                });
+            } else {
+                console.error('Typing element not found');
+            }
+        }
+
+
+
+        // Load and display about data
+        async function loadAboutData() {
+            try {
+
+                
+                const aboutData = await dataLoader.loadAbout();
+
+                
+                if (aboutData && aboutData.success !== false) {
+                    displayAboutData(aboutData);
+                } else {
+                    if (aboutData && aboutData.error) {
+                        console.error('Database error:', aboutData.error);
+                    }
+                    showLoadingError('about');
+                }
+            } catch (error) {
+                console.error('Error loading about data:', error);
+
+                showLoadingError('about');
+            }
+        }
+
+        // Test database connection directly
+        async function testDatabaseConnection() {
+            try {
+                const response = await fetch(dataLoader.baseUrl + 'get_about.php');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                
+                try {
+                    const data = JSON.parse(text);
+                    return data;
+                } catch (parseError) {
+                    console.error('Failed to parse JSON:', parseError);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Database connection test failed:', error);
+                return null;
+            }
+        }
+
+        // Display about data in the DOM
+        function displayAboutData(response) {
+            // Extract data from the response
+            const data = response.data || response;
+            
+            console.log('About data received:', data);
+            
+            // Display stats in the hero section (top row)
+            if (data.stats && data.stats.length > 0) {
+                const statsContainer = document.querySelector('.about-stats .loading-placeholder');
+                if (statsContainer) {
+                    statsContainer.innerHTML = '';
+                    data.stats.forEach(stat => {
+                        const statElement = document.createElement('div');
+                        statElement.className = 'stat-item';
+                        statElement.innerHTML = `
+                            <div class="stat-icon">
+                                ${stat.icon ? `<i class="${stat.icon}"></i>` : '<i class="fas fa-chart-bar"></i>'}
+                            </div>
+                            <div class="stat-number">${stat.value}</div>
+                            <div class="stat-label">${stat.label}</div>
+                            ${stat.description ? `<div class="stat-description">${stat.description}</div>` : ''}
+                        `;
+                        statsContainer.appendChild(statElement);
+                    });
+                }
+            }
+
+            // Display personal information
+            if (data.personal_info) {
+                const personalInfoContainer = document.querySelector('.personal-info-placeholder');
+                if (personalInfoContainer) {
+                    personalInfoContainer.innerHTML = `
+                        <div class="personal-info-card">
+                            <h3><i class="fas fa-user"></i> Personal Information</h3>
+                            <div class="info-content">
+                                <div class="info-row">
+                                    <span class="info-label"><i class="fas fa-user-circle"></i> Name:</span>
+                                    <span class="info-value">${data.personal_info.name || 'Abdullah Al Mahmud'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label"><i class="fas fa-envelope"></i> Email:</span>
+                                    <span class="info-value">${data.personal_info.email || 'abdullah@example.com'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label"><i class="fas fa-map-marker-alt"></i> Location:</span>
+                                    <span class="info-value">${data.personal_info.location || 'Dhaka, Bangladesh'}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label"><i class="fas fa-phone"></i> Phone:</span>
+                                    <span class="info-value">${data.personal_info.phone || '+880 1XXX-XXXXXX'}</span>
+                                </div>
+                                ${data.personal_info.bio ? `
+                                    <div class="info-row bio-row">
+                                        <span class="info-label"><i class="fas fa-quote-left"></i> Bio:</span>
+                                        <span class="info-value">${data.personal_info.bio}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Display about sections
+            if (data.sections && data.sections.length > 0) {
+                const sectionsContainer = document.querySelector('.about-sections-placeholder');
+                if (sectionsContainer) {
+                    sectionsContainer.innerHTML = `
+                        <div class="about-sections-card">
+                            <h3><i class="fas fa-info-circle"></i> About Me</h3>
+                            <div class="sections-content">
+                                ${data.sections.map(section => `
+                                    <div class="section-item">
+                                        <div class="section-header">
+                                            ${section.icon ? `<i class="${section.icon}"></i>` : '<i class="fas fa-star"></i>'}
+                                            <h4>${section.title}</h4>
+                                        </div>
+                                        <p>${section.content}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Load and display gallery data
+        async function loadGalleryData() {
+            try {
+                const photos = await dataLoader.loadPhotos();
+                
+                if (photos && photos.length > 0) {
+                    displayGalleryData(photos);
+                } else {
+                    showLoadingError('gallery');
+                }
+            } catch (error) {
+                console.error('Error loading gallery data:', error);
+                showLoadingError('gallery');
+            }
+        }
+
+        // Display gallery data in the DOM
+        function displayGalleryData(photos) {
+            const galleryContainer = document.querySelector('.photo-gallery');
+            if (galleryContainer) {
+                galleryContainer.innerHTML = '';
+                photos.forEach(photo => {
+                    const photoElement = document.createElement('div');
+                    photoElement.className = 'photo-item';
+                    photoElement.innerHTML = `
+                        <img src="${photo.image_url}" alt="${photo.title}" loading="lazy">
+                        <div class="photo-overlay">
+                            <h3>${photo.title}</h3>
+                            <p>${photo.description}</p>
+                            <span class="category">${photo.category}</span>
+                        </div>
+                    `;
+                    galleryContainer.appendChild(photoElement);
+                });
+            }
+        }
+
+        // Show loading error message
+        function showLoadingError(section) {
+            const container = document.querySelector(`#${section} .loading-message`);
+            if (container) {
+                container.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load data. Please check your database connection.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Start typing effect when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize typing effect
+            setTimeout(initTypingEffect, 1000);
+            
+            // Test database connection first
+            testDatabaseConnection().then(testResult => {
+                if (testResult && testResult.success) {
+                    // Load data from database
+                    loadAboutData();
+                    loadGalleryData();
+                } else {
+                    showLoadingError('about');
+                    showLoadingError('gallery');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

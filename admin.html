@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #18191a 0%, #232526 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .admin-login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-login-header {
+            margin-bottom: 30px;
+        }
+
+        .admin-login-header h1 {
+            color: #6a11cb;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .admin-login-header p {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .admin-icon {
+            background: linear-gradient(135deg, #6a11cb, #ffb347);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(106, 17, 203, 0.3);
+        }
+
+        .login-form {
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6a11cb;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #6a11cb;
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #6a11cb, #ffb347);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(106, 17, 203, 0.3);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-to-portfolio {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .back-to-portfolio a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-portfolio a:hover {
+            color: #ffb347;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .admin-login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+
+            .admin-login-header h1 {
+                font-size: 1.7rem;
+            }
+
+            .admin-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.7rem;
+            }
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .admin-panel-header {
+            background: linear-gradient(135deg, #6a11cb, #ffb347);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .admin-panel-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .admin-panel-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .close-admin {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #6a11cb;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-admin:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #ffb347;
+            transform: rotate(180deg) scale(1.1);
+            border-color: rgba(255, 179, 71, 0.5);
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        /* Admin Content */
+        .admin-content {
+            padding: 25px;
+        }
+
+        .admin-section {
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .admin-section h3 {
+            color: #6a11cb;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-section h3 i {
+            color: #ffb347;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6a11cb;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: linear-gradient(135deg, #6a11cb, #ffb347);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(106, 17, 203, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 4px solid rgba(255, 179, 71, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffb347;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tab Navigation */
+        .admin-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .admin-tab {
+            flex: 1;
+            padding: 10px 15px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .admin-tab.active {
+            background: linear-gradient(135deg, #6a11cb, #ffb347);
+            color: white;
+        }
+
+        .admin-tab:hover:not(.active) {
+            background: rgba(106, 17, 203, 0.1);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive Design for Admin Panel */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .admin-tab {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-login-container">
+        <div class="admin-login-header">
+            <div class="admin-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h1>Admin Login</h1>
+            <p>Access your portfolio management panel</p>
+        </div>
+
+        <form class="login-form" id="adminLoginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-field">
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="btn-text">Sign In</span>
+            </button>
+        </form>
+
+        <div id="loginMessage" class="message"></div>
+
+        <div class="back-to-portfolio">
+            <a href="home.html">
+                <i class="fas fa-arrow-left"></i>
+                Back to Portfolio
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden initially) -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <div class="admin-panel-header">
+            <button class="close-admin" onclick="closeAdminPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2>Portfolio Admin Panel</h2>
+            <p>Manage your portfolio content</p>
+        </div>
+
+        <div class="admin-content">
+            <!-- Tab Navigation -->
+            <div class="admin-tabs">
+                <div class="admin-tab active" onclick="switchTab('skills')">
+                    <i class="fas fa-star"></i> Skills
+                </div>
+                <div class="admin-tab" onclick="switchTab('education')">
+                    <i class="fas fa-graduation-cap"></i> Education
+                </div>
+                <div class="admin-tab" onclick="switchTab('experience')">
+                    <i class="fas fa-briefcase"></i> Experience
+                </div>
+                <div class="admin-tab" onclick="switchTab('projects')">
+                    <i class="fas fa-code"></i> Projects
+                </div>
+            </div>
+
+            <!-- Skills Tab -->
+            <div id="skills-tab" class="tab-content active">
+                <div class="admin-section">
+                    <h3><i class="fas fa-star"></i> Add New Skill</h3>
+                    <form id="skillsForm">
+                        <div class="form-group">
+                            <label for="skillName">Skill Name *</label>
+                            <input type="text" id="skillName" name="skillName" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="skillCategory">Category *</label>
+                                <select id="skillCategory" name="skillCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="frontend">Frontend</option>
+                                    <option value="backend">Backend</option>
+                                    <option value="fullstack">Fullstack</option>
+                                    <option value="uiux">UI/UX</option>
+                                    <option value="soft">Soft Skills</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="skillProficiency">Proficiency Level *</label>
+                                <input type="number" id="skillProficiency" name="skillProficiency" min="1" max="100" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="skillDescription">Description</label>
+                            <textarea id="skillDescription" name="skillDescription" placeholder="Brief description of the skill..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-text">Add Skill</span>
+                        </button>
+                    </form>
+                    <div id="skillsMessage" class="message"></div>
+                </div>
+            </div>
+
+            <!-- Education Tab -->
+            <div id="education-tab" class="tab-content">
+                <div class="admin-section">
+                    <h3><i class="fas fa-graduation-cap"></i> Add New Education</h3>
+                    <form id="educationForm">
+                        <div class="form-group">
+                            <label for="degree">Degree/Certificate *</label>
+                            <input type="text" id="degree" name="degree" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="institution">Institution *</label>
+                            <input type="text" id="institution" name="institution" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="location">Location</label>
+                                <input type="text" id="location" name="location" placeholder="City, Country">
+                            </div>
+                            <div class="form-group">
+                                <label for="fieldOfStudy">Field of Study</label>
+                                <input type="text" id="fieldOfStudy" name="fieldOfStudy">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="startDate">Start Date *</label>
+                                <input type="date" id="startDate" name="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate">End Date</label>
+                                <input type="date" id="endDate" name="endDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="duration">Duration (Display)</label>
+                                <input type="text" id="duration" name="duration" placeholder="e.g., 2018 - 2022">
+                            </div>
+                            <div class="form-group">
+                                <label for="gpa">GPA</label>
+                                <input type="number" id="gpa" name="gpa" step="0.01" min="0" max="5" placeholder="e.g., 3.85">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="educationDescription">Description *</label>
+                            <textarea id="educationDescription" name="educationDescription" required placeholder="Describe your educational experience..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="achievements">Achievements</label>
+                            <textarea id="achievements" name="achievements" placeholder="List your achievements (one per line)..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-text">Add Education</span>
+                        </button>
+                    </form>
+                    <div id="educationMessage" class="message"></div>
+                </div>
+            </div>
+
+            <!-- Experience Tab -->
+            <div id="experience-tab" class="tab-content">
+                <div class="admin-section">
+                    <h3><i class="fas fa-briefcase"></i> Add New Experience</h3>
+                    <form id="experienceForm">
+                        <div class="form-group">
+                            <label for="position">Position *</label>
+                            <input type="text" id="position" name="position" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName">Company Name *</label>
+                            <input type="text" id="companyName" name="companyName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expLocation">Location</label>
+                            <input type="text" id="expLocation" name="expLocation" placeholder="City, Country">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="expStartDate">Start Date *</label>
+                                <input type="date" id="expStartDate" name="expStartDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expEndDate">End Date</label>
+                                <input type="date" id="expEndDate" name="expEndDate">
+                            </div>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="currentJob" name="currentJob">
+                            <label for="currentJob">Current Job</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="expDescription">Description *</label>
+                            <textarea id="expDescription" name="expDescription" required placeholder="Describe your role and responsibilities..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="expAchievements">Achievements</label>
+                            <textarea id="expAchievements" name="expAchievements" placeholder="List your achievements (one per line)..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="technologiesUsed">Technologies Used</label>
+                            <textarea id="technologiesUsed" name="technologiesUsed" placeholder="List technologies (comma-separated)..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-text">Add Experience</span>
+                        </button>
+                    </form>
+                    <div id="experienceMessage" class="message"></div>
+                </div>
+            </div>
+
+            <!-- Projects Tab -->
+            <div id="projects-tab" class="tab-content">
+                <div class="admin-section">
+                    <h3><i class="fas fa-code"></i> Add New Project</h3>
+                    <form id="projectsForm">
+                        <div class="form-group">
+                            <label for="projectTitle">Project Title *</label>
+                            <input type="text" id="projectTitle" name="projectTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectDescription">Description *</label>
+                            <textarea id="projectDescription" name="projectDescription" required placeholder="Describe your project..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectCategory">Category *</label>
+                            <select id="projectCategory" name="projectCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="frontend">Frontend</option>
+                                <option value="backend">Backend</option>
+                                <option value="fullstack">Fullstack</option>
+                                <option value="uiux">UI/UX</option>
+                            </select>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="imageUrl">Image URL</label>
+                                <input type="url" id="imageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div class="form-group">
+                                <label for="liveUrl">Live Demo URL</label>
+                                <input type="url" id="liveUrl" name="liveUrl" placeholder="https://example.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="sourceCodeUrl">Source Code URL</label>
+                            <input type="url" id="sourceCodeUrl" name="sourceCodeUrl" placeholder="https://github.com/username/project">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectTechnologies">Technologies *</label>
+                            <textarea id="projectTechnologies" name="projectTechnologies" required placeholder="List technologies (comma-separated)..."></textarea>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="featured" name="featured">
+                            <label for="featured">Featured Project</label>
+                        </div>
+                        <button type="submit" class="submit-btn">
+                            <span class="btn-text">Add Project</span>
+                        </button>
+                    </form>
+                    <div id="projectsMessage" class="message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.className = 'fas fa-eye';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const messageDiv = document.getElementById('loginMessage');
+            
+            // Disable button and show loading
+            loginBtn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span>Signing In...';
+            
+            try {
+                const formData = new FormData(this);
+                const email = formData.get('email');
+                const password = formData.get('password');
+                
+                // Check if email matches the authorized email
+                if (email === 'lazy21226@gmail.com') {
+                    // For demo purposes, accept any password for the authorized email
+                    // In production, you should implement proper password hashing and verification
+                    showMessage('success', 'Login successful! Opening admin panel...');
+                    
+                    // Store admin session
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    localStorage.setItem('adminEmail', email);
+                    
+                    // Show admin panel
+                    setTimeout(() => {
+                        document.getElementById('adminPanel').style.display = 'block';
+                        document.querySelector('.admin-login-container').style.display = 'none';
+                    }, 1500);
+                    
+                } else {
+                    showMessage('error', 'Invalid email or password. Access denied.');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('error', 'An error occurred. Please try again.');
+            } finally {
+                // Re-enable button
+                loginBtn.disabled = false;
+                btnText.textContent = 'Sign In';
+            }
+        });
+
+        // Show success/error messages
+        function showMessage(type, message) {
+            const messageDiv = document.getElementById('loginMessage');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            // Auto-hide error messages after 5 seconds
+            if (type === 'error') {
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', function() {
+            if (localStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.querySelector('.admin-login-container').style.display = 'none';
+            }
+        });
+
+        // Admin Panel Functions
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+            document.querySelector('.admin-login-container').style.display = 'flex';
+            // Clear session
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.admin-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Form Submission Functions
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('skillsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm('skills', this);
+            });
+
+            document.getElementById('educationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm('education', this);
+            });
+
+            document.getElementById('experienceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm('experience', this);
+            });
+
+            document.getElementById('projectsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitForm('projects', this);
+            });
+        });
+
+        // Generic Form Submission
+        async function submitForm(formType, formElement) {
+            const submitBtn = formElement.querySelector('.submit-btn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const messageDiv = document.getElementById(formType + 'Message');
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span>Submitting...';
+            
+            try {
+                const formData = new FormData(formElement);
+                const data = Object.fromEntries(formData);
+                
+                // Process form data based on type
+                let processedData = {};
+                switch(formType) {
+                    case 'skills':
+                        processedData = {
+                            name: data.skillName,
+                            category: data.skillCategory,
+                            proficiency_level: parseInt(data.skillProficiency),
+                            description: data.skillDescription || ''
+                        };
+                        break;
+                    case 'education':
+                        processedData = {
+                            degree: data.degree,
+                            institution: data.institution,
+                            location: data.location || '',
+                            field_of_study: data.fieldOfStudy || '',
+                            start_date: data.startDate,
+                            end_date: data.endDate || null,
+                            duration: data.duration || '',
+                            gpa: data.gpa ? parseFloat(data.gpa) : null,
+                            description: data.educationDescription,
+                            achievements: data.achievements || ''
+                        };
+                        break;
+                    case 'experience':
+                        processedData = {
+                            position: data.position,
+                            company_name: data.companyName,
+                            location: data.expLocation || '',
+                            start_date: data.expStartDate,
+                            end_date: data.currentJob ? null : data.expEndDate,
+                            current_job: data.currentJob ? true : false,
+                            description: data.expDescription,
+                            achievements: data.expAchievements || '',
+                            technologies_used: data.technologiesUsed || ''
+                        };
+                        break;
+                    case 'projects':
+                        processedData = {
+                            title: data.projectTitle,
+                            description: data.projectDescription,
+                            category: data.projectCategory,
+                            image_url: data.imageUrl || '',
+                            live_url: data.liveUrl || '',
+                            source_code_url: data.sourceCodeUrl || '',
+                            technologies: data.projectTechnologies,
+                            featured: data.featured ? true : false
+                        };
+                        break;
+                }
+                
+                // Send data to appropriate endpoint
+                const response = await fetch(`php/admin_${formType}.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(processedData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAdminMessage(formType, 'success', result.message || `${formType.charAt(0).toUpperCase() + formType.slice(1)} added successfully!`);
+                    formElement.reset();
+                } else {
+                    showAdminMessage(formType, 'error', result.message || 'An error occurred. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage(formType, 'error', 'Network error. Please check your connection.');
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                btnText.textContent = `Add ${formType.charAt(0).toUpperCase() + formType.slice(1)}`;
+            }
+        }
+
+        // Show success/error messages for admin panel
+        function showAdminMessage(formType, type, message) {
+            const messageDiv = document.getElementById(formType + 'Message');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageDiv.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

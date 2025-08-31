@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Skills Loading</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>Skills Loading Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Database Connection Test</h2>
+        <button class="test-button" onclick="testDatabaseConnection()">Test Database Connection</button>
+        <div id="db-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Skills Data Test</h2>
+        <button class="test-button" onclick="testSkillsLoading()">Load Skills from Database</button>
+        <button class="test-button" onclick="testSkillCategories()">Load Skill Categories</button>
+        <div id="skills-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Skills Page Integration Test</h2>
+        <button class="test-button" onclick="testSkillsPage()">Test Skills Page Functions</button>
+        <div id="integration-result" class="result"></div>
+    </div>
+
+    <script src="js/database-loader.js"></script>
+    <script>
+        function testDatabaseConnection() {
+            const resultDiv = document.getElementById('db-result');
+            resultDiv.textContent = 'Testing database connection...';
+            resultDiv.className = 'result';
+            
+            fetch('php/db_connect.php')
+                .then(response => response.text())
+                .then(data => {
+                    resultDiv.textContent = 'Database connection successful!\n\nResponse:\n' + data;
+                    resultDiv.className = 'result success';
+                })
+                .catch(error => {
+                    resultDiv.textContent = 'Database connection failed!\n\nError:\n' + error.message;
+                    resultDiv.className = 'result error';
+                });
+        }
+
+        async function testSkillsLoading() {
+            const resultDiv = document.getElementById('skills-result');
+            resultDiv.textContent = 'Loading skills...';
+            resultDiv.className = 'result';
+            
+            try {
+                const dataLoader = new PortfolioDataLoader();
+                const skills = await dataLoader.loadSkills();
+                
+                if (skills && skills.length > 0) {
+                    resultDiv.textContent = `Skills loaded successfully!\n\nTotal skills: ${skills.length}\n\nFirst skill:\n${JSON.stringify(skills[0], null, 2)}\n\nAll skills:\n${JSON.stringify(skills, null, 2)}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = 'No skills found in database';
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error loading skills:\n' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testSkillCategories() {
+            const resultDiv = document.getElementById('skills-result');
+            resultDiv.textContent = 'Loading skill categories...';
+            resultDiv.className = 'result';
+            
+            try {
+                const dataLoader = new PortfolioDataLoader();
+                const categories = await dataLoader.loadSkillCategories();
+                
+                if (categories && categories.length > 0) {
+                    resultDiv.textContent = `Skill categories loaded successfully!\n\nTotal categories: ${categories.length}\n\nAll categories:\n${JSON.stringify(categories, null, 2)}`;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = 'No skill categories found in database';
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error loading skill categories:\n' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        function testSkillsPage() {
+            const resultDiv = document.getElementById('integration-result');
+            resultDiv.textContent = 'Testing skills page functions...';
+            resultDiv.className = 'result';
+            
+            try {
+                // Test the functions that would be used in the skills page
+                const testSkills = [
+                    {
+                        name: 'Test Skill',
+                        proficiency_level: 85,
+                        description: 'Test description',
+                        category_id: 1,
+                        category_name: 'Frontend Development',
+                        display_order: 1
+                    }
+                ];
+                
+                // Test category name function
+                const categoryName = getCategoryName(1);
+                
+                // Test category icon function
+                const categoryIcon = getCategoryIcon('Frontend Development');
+                
+                // Test skill level function
+                const skillLevel = getSkillLevel(85);
+                
+                resultDiv.textContent = `Skills page functions working!\n\nTest results:\n- Category name for ID 1: ${categoryName}\n- Icon for Frontend Development: ${categoryIcon}\n- Skill level for 85: ${skillLevel}\n\nTest data:\n${JSON.stringify(testSkills, null, 2)}`;
+                resultDiv.className = 'result success';
+                
+            } catch (error) {
+                resultDiv.textContent = 'Error testing skills page functions:\n' + error.message;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Helper functions from skills page
+        function getCategoryName(categoryId) {
+            const categoryMap = {
+                1: 'Frontend Development',
+                2: 'Backend Development',
+                3: 'Fullstack Development',
+                4: 'UI/UX Design',
+                5: 'DevOps & Tools'
+            };
+            return categoryMap[categoryId] || 'Other';
+        }
+
+        function getCategoryIcon(category) {
+            const iconMap = {
+                'Frontend Development': 'fas fa-code',
+                'Backend Development': 'fas fa-server',
+                'Fullstack Development': 'fas fa-laptop-code',
+                'UI/UX Design': 'fas fa-palette',
+                'DevOps & Tools': 'fas fa-tools',
+                'Other': 'fas fa-star'
+            };
+            return iconMap[category] || iconMap['Other'];
+        }
+
+        function getSkillLevel(proficiency) {
+            if (proficiency >= 90) return 'Expert';
+            if (proficiency >= 80) return 'Advanced';
+            if (proficiency >= 70) return 'Intermediate';
+            if (proficiency >= 60) return 'Beginner';
+            return 'Learning';
+        }
+    </script>
+</body>
+</html>
