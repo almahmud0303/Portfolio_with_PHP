@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const navMenu = document.querySelector('nav ul');
     
     if (mobileMenuToggle && navMenu) {
-        mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             mobileMenuToggle.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
@@ -26,7 +27,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 navMenu.classList.remove('active');
             }
         });
+        
+        // Prevent menu from closing when clicking inside it
+        navMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
     }
+
+    // Set active navigation link based on current page
+    setActiveNavLink();
 
     // Form validation and reset for contact form
     const contactForm = document.getElementById('contact-form');
@@ -83,9 +92,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Page transition effect + in-page smooth scrolling
     document.querySelectorAll('a[href]').forEach(link => {
+        // Skip external links with target="_blank" (social media links)
+        if (link.target === '_blank') return;
+        
         // Only apply to internal links
         const isSameHost = (link.hostname === window.location.hostname) || link.hostname === '';
-        if (!isSameHost || link.target) return;
+        if (!isSameHost) return;
 
         const linkUrl = new URL(link.href, window.location.href);
         const isHashOnly = !!linkUrl.hash && linkUrl.pathname === window.location.pathname;
@@ -102,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        // External or full-page internal navigation with fade-out
+        // Internal page navigation with fade-out
         if (!link.href.endsWith('#')) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -117,6 +129,33 @@ document.addEventListener("DOMContentLoaded", function() {
     // Typing effect is now handled by the shared utility in typing-effect.js
     // This file focuses on mobile navigation and form handling
 });
+
+// Function to set active navigation link based on current page
+function setActiveNavLink() {
+    const currentPage = window.location.pathname.split('/').pop() || 'home.html';
+    const navLinks = document.querySelectorAll('nav ul li a');
+    
+    // Remove active class from all links
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Add active class to current page link
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === currentPage || (currentPage === '' && href === 'home.html')) {
+            link.classList.add('active');
+        }
+    });
+    
+    // Special case for about link on home page
+    if (currentPage === 'home.html' || currentPage === '') {
+        const aboutLink = document.querySelector('nav ul li a[href="#about"]');
+        if (aboutLink) {
+            // Don't add active class to about link, let home link stay active
+        }
+    }
+}
 
 // Bubble animation for homepage background
 (function() {
