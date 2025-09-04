@@ -14,6 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Get JSON input
 $input = json_decode(file_get_contents('php://input'), true);
 
+// Debug: Log the received input
+error_log("Projects input received: " . json_encode($input));
+
 // Validate required fields
 if (!isset($input['title']) || !isset($input['description']) || !isset($input['category']) || !isset($input['technologies'])) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
@@ -56,6 +59,11 @@ if ($source_code_url && !filter_var($source_code_url, FILTER_VALIDATE_URL)) {
 try {
     // Include database connection
     require_once 'db_connect.php';
+    
+    // Check if connection is successful
+    if ($conn->connect_error) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    }
     
     // Check if project already exists
     $check_stmt = $conn->prepare("SELECT id FROM projects WHERE title = ? AND category = ?");
@@ -101,7 +109,20 @@ try {
     
 } catch (Exception $e) {
     error_log("Error adding project: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Database error occurred']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Database error occurred: ' . $e->getMessage(),
+        'debug' => [
+            'title' => $title,
+            'description' => $description,
+            'category' => $category,
+            'image_url' => $image_url,
+            'live_url' => $live_url,
+            'source_code_url' => $source_code_url,
+            'technologies' => $technologies,
+            'featured' => $featured
+        ]
+    ]);
 } finally {
     if (isset($conn)) {
         $conn->close();

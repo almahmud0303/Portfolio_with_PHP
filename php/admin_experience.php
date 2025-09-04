@@ -14,6 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Get JSON input
 $input = json_decode(file_get_contents('php://input'), true);
 
+// Debug: Log the received input
+error_log("Experience input received: " . json_encode($input));
+
 // Validate required fields
 if (!isset($input['position']) || !isset($input['company_name']) || !isset($input['start_date']) || !isset($input['description'])) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
@@ -57,6 +60,11 @@ try {
     // Include database connection
     require_once 'db_connect.php';
     
+    // Check if connection is successful
+    if ($conn->connect_error) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    }
+    
     // Check if experience entry already exists
     $check_stmt = $conn->prepare("SELECT id FROM experience WHERE position = ? AND company_name = ? AND start_date = ?");
     $check_stmt->bind_param("sss", $position, $company_name, $start_date);
@@ -70,10 +78,10 @@ try {
     
     // Insert new experience entry
     $insert_stmt = $conn->prepare("
-        INSERT INTO experience (position, company_name, location, start_date, end_date, current_job, description, achievements, technologies_used) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO experience (position, company_name, start_date, end_date, current_job, description, achievements, technologies_used) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ");
-    $insert_stmt->bind_param("sssssiss", $position, $company_name, $location, $start_date, $end_date, $current_job, $description, $achievements, $technologies_used);
+    $insert_stmt->bind_param("ssssisss", $position, $company_name, $start_date, $end_date, $current_job, $description, $achievements, $technologies_used);
     
     if ($insert_stmt->execute()) {
         $experience_id = $conn->insert_id;
@@ -85,7 +93,6 @@ try {
             'data' => [
                 'position' => $position,
                 'company_name' => $company_name,
-                'location' => $location,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'current_job' => $current_job,
@@ -102,7 +109,20 @@ try {
     
 } catch (Exception $e) {
     error_log("Error adding experience: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Database error occurred']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Database error occurred: ' . $e->getMessage(),
+        'debug' => [
+            'position' => $position,
+            'company_name' => $company_name,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'current_job' => $current_job,
+            'description' => $description,
+            'achievements' => $achievements,
+            'technologies_used' => $technologies_used
+        ]
+    ]);
 } finally {
     if (isset($conn)) {
         $conn->close();

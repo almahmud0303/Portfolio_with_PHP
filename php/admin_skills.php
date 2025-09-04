@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $input = json_decode(file_get_contents('php://input'), true);
 
 // Validate required fields
-if (!isset($input['name']) || !isset($input['category_id']) || !isset($input['proficiency_level'])) {
+if (!isset($input['name']) || !isset($input['category']) || !isset($input['proficiency_level'])) {
     echo json_encode(['success' => false, 'message' => 'Missing required fields']);
     exit;
 }
 
 // Sanitize and validate input
 $name = trim($input['name']);
-$category_id = intval($input['category_id']);
+$category = trim($input['category']);
 $proficiency_level = intval($input['proficiency_level']);
 $description = isset($input['description']) ? trim($input['description']) : '';
 $display_order = isset($input['display_order']) ? intval($input['display_order']) : 1;
@@ -33,15 +33,58 @@ if ($proficiency_level < 1 || $proficiency_level > 100) {
     exit;
 }
 
-// Validate category_id
-if ($category_id < 1) {
-    echo json_encode(['success' => false, 'message' => 'Invalid category ID']);
+// Validate category
+$valid_categories = ['frontend', 'backend', 'fullstack', 'uiux', 'soft'];
+if (!in_array($category, $valid_categories)) {
+    echo json_encode(['success' => false, 'message' => 'Invalid category']);
     exit;
 }
+
+// Map frontend category values to database category names
+$category_mapping = [
+    'frontend' => 'Frontend',
+    'backend' => 'Backend', 
+    'fullstack' => 'Fullstack',
+    'uiux' => 'UI/UX',
+    'soft' => 'Soft Skills'
+];
+
+$category_name = $category_mapping[$category];
 
 try {
     // Include database connection
     require_once 'db_connect.php';
+    
+    // Check if connection is successful
+    if ($conn->connect_error) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    }
+    
+    // Get category ID from category name
+    $category_stmt = $conn->prepare("SELECT id FROM skill_categories WHERE name = ?");
+    $category_stmt->bind_param("s", $category_name);
+    $category_stmt->execute();
+    $category_result = $category_stmt->get_result();
+    
+    if ($category_result->num_rows === 0) {
+        // Category doesn't exist, create it
+        $insert_category_stmt = $conn->prepare("INSERT INTO skill_categories (name, description, display_order) VALUES (?, ?, ?)");
+        $display_order = array_search($category, $valid_categories) + 1;
+        $description = "Skills related to " . strtolower($category_name);
+        $insert_category_stmt->bind_param("ssi", $category_name, $description, $display_order);
+        
+        if ($insert_category_stmt->execute()) {
+            $category_id = $conn->insert_id;
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to create category']);
+            exit;
+        }
+        $insert_category_stmt->close();
+    } else {
+        $category_row = $category_result->fetch_assoc();
+        $category_id = $category_row['id'];
+    }
+    $category_stmt->close();
     
     // Check if skill already exists
     $check_stmt = $conn->prepare("SELECT id FROM skills WHERE name = ? AND category_id = ?");
@@ -67,6 +110,8 @@ try {
             'skill_id' => $skill_id,
             'data' => [
                 'name' => $name,
+                'category' => $category,
+                'category_name' => $category_name,
                 'category_id' => $category_id,
                 'proficiency_level' => $proficiency_level,
                 'description' => $description,
