@@ -115,7 +115,7 @@ portfolio/
    // Update php/db_connect.php
    $servername = "localhost";
    $username = "root";
-   $password = ""; // Your MySQL password
+   $password = "";
    $dbname = "portfolio_db";
    ```
 
